@@ -20,6 +20,5 @@ fn main() {
         .add_systems(Update, (move_player, player::set_jumping_false))
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
-        .add_plugins(RapierDebugRenderPlugin::default())
         .run();
 }

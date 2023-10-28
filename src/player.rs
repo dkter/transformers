@@ -36,7 +36,7 @@ pub fn spawn_player(mut commands: Commands) {
         Ccd::enabled(),
         LockedAxes::ROTATION_LOCKED,
         ColliderMassProperties::Density(2.0),
-        GravityScale(2.0),
+        GravityScale(4.0),
         Velocity::zero(),
         Player::new(),
     ));
