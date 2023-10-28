@@ -18,7 +18,7 @@ impl Player {
     fn new() -> Self {
         Player {
             is_jumping: false,
-            squares: vec![SquarePos(0, 0)],
+            squares: vec![SquarePos(0, 0), SquarePos(0, 1), SquarePos(1, 0)],
         }
     }
 
@@ -32,6 +32,18 @@ impl Player {
         }
         builder.build()
     }
+
+    fn get_collider(&self) -> Collider {
+        let shape_tuples = self.squares.iter().map(|square|
+            (
+                Vec2::new(PLAYER_WIDTH * square.0 as f32, PLAYER_HEIGHT * square.1 as f32),
+                0.0,
+                Collider::cuboid(PLAYER_WIDTH/2.0, PLAYER_HEIGHT/2.0),
+            )
+        ).collect();
+
+        Collider::compound(shape_tuples)
+    }
 }
 
 
@@ -44,7 +56,7 @@ pub fn spawn_player(mut commands: Commands) {
         },
         Fill::color(Color::YELLOW),
         RigidBody::Dynamic,
-        Collider::cuboid(PLAYER_WIDTH/2.0, PLAYER_HEIGHT/2.0),
+        player.get_collider(),
         ActiveEvents::CONTACT_FORCE_EVENTS,
         Sleeping::disabled(),
         Ccd::enabled(),
