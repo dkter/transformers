@@ -3,6 +3,7 @@ mod map;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use bevy_prototype_lyon::prelude::*;
 use player::{Player, spawn_player, move_player};
 use map::spawn_map;
 
@@ -32,6 +33,7 @@ fn main() {
         .add_systems(Startup, (setup, spawn_player, spawn_map))
         .add_systems(Update, (move_player, player::set_jumping_false, check_restart))
         .add_plugins(DefaultPlugins)
+        .add_plugins(ShapePlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .run();
 }

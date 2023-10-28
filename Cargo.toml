@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 bevy="0.11"
 bevy_rapier2d = "0.22"
+bevy_prototype_lyon = "0.9.0"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
