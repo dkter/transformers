@@ -18,7 +18,7 @@ impl Player {
     fn new() -> Self {
         Player {
             is_jumping: false,
-            squares: vec![SquarePos(0, 0), SquarePos(0, 1), SquarePos(1, 0)],
+            squares: vec![SquarePos(0, 0), SquarePos(0, 1), SquarePos(1, 1)],
         }
     }
 
@@ -62,7 +62,7 @@ pub fn spawn_player(mut commands: Commands) {
         Ccd::enabled(),
         LockedAxes::ROTATION_LOCKED,
         ColliderMassProperties::Density(2.0),
-        GravityScale(4.0),
+        GravityScale(3.0),
         Velocity::zero(),
         player,
     ));

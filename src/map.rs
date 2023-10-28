@@ -36,7 +36,7 @@ impl Block {
 
 const LEVEL0: [Block; 2] = [
     Block { x: -200.0, y: -200.0, w: 600.0, h: 50.0 },
-    Block { x: 200.0, y: 0.0, w: 50.0, h: 200.0 },
+    Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
 ];
 
 pub fn spawn_map(mut commands: Commands) {
