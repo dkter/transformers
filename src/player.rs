@@ -63,12 +63,13 @@ pub fn move_player(
 }
 
 pub fn set_jumping_false(
-    mut collision_events: EventReader<ContactForceEvent>,
+    mut contact_events: EventReader<ContactForceEvent>,
     mut players: Query<(Entity, &mut Player)>,
 ) {
     for (entity, mut player) in &mut players {
-        for contact_event in collision_events.iter() {
-            if contact_event.collider1 == entity || contact_event.collider2 == entity {
+        for contact_event in contact_events.iter() {
+            if (contact_event.collider1 == entity || contact_event.collider2 == entity)
+                    && contact_event.total_force.y != 0.0 {
                 player.is_jumping = false;
             }
         }
