@@ -6,7 +6,7 @@ const PLAYER_WIDTH: f32 = 50.0;
 const PLAYER_HEIGHT: f32 = 50.0;
 
 
-struct SquarePos(i32, i32);
+pub struct SquarePos(i32, i32);
 
 #[derive(Component)]
 pub struct Player {
@@ -43,6 +43,10 @@ impl Player {
         ).collect();
 
         Collider::compound(shape_tuples)
+    }
+
+    pub fn add_square(&mut self, x: i32, y: i32) {
+        self.squares.push(SquarePos(x, y));
     }
 }
 
