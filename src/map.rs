@@ -9,6 +9,14 @@ struct Block {
 }
 
 impl Block {
+    fn x_ctr(&self) -> f32 {
+        self.x + self.w / 2.0
+    }
+
+    fn y_ctr(&self) -> f32 {
+        self.y - self.h / 2.0
+    }
+
     fn to_sprite_bundle(&self) -> SpriteBundle {
         SpriteBundle {
             sprite: Sprite {
@@ -16,7 +24,7 @@ impl Block {
                 custom_size: Some(Vec2::new(self.w, self.h)),
                 ..default()
             },
-            transform: Transform::from_xyz(self.x, self.y, 0.0),
+            transform: Transform::from_xyz(self.x_ctr(), self.y_ctr(), 0.0),
             ..default()
         }
     }
@@ -27,8 +35,8 @@ impl Block {
 }
 
 const LEVEL0: [Block; 2] = [
-    Block { x: 0.0, y: -200.0, w: 500.0, h: 50.0 },
-    Block { x: 200.0, y: -200.0, w: 50.0, h: 150.0 },
+    Block { x: -200.0, y: -200.0, w: 600.0, h: 50.0 },
+    Block { x: 200.0, y: 0.0, w: 50.0, h: 200.0 },
 ];
 
 pub fn spawn_map(mut commands: Commands) {
