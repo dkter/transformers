@@ -30,7 +30,6 @@ pub fn spawn_player(mut commands: Commands) {
         },
         RigidBody::Dynamic,
         Collider::cuboid(PLAYER_WIDTH/2.0, PLAYER_HEIGHT/2.0),
-        //ActiveEvents::COLLISION_EVENTS,
         ActiveEvents::CONTACT_FORCE_EVENTS,
         Sleeping::disabled(),
         Ccd::enabled(),
@@ -69,12 +68,6 @@ pub fn set_jumping_false(
 ) {
     for (entity, mut player) in &mut players {
         for contact_event in collision_events.iter() {
-            // if let CollisionEvent::Started(obj1, obj2, _) = contact_event {
-            //     println!("Collision started: {:?}", contact_event);
-            //     if entity == *obj1 || entity == *obj2 {
-            //         player.is_jumping = false;
-            //     }
-            // }
             if contact_event.collider1 == entity || contact_event.collider2 == entity {
                 player.is_jumping = false;
             }
