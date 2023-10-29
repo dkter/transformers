@@ -60,7 +60,9 @@ fn fade_step(
             for entity in &player_entities {
                 commands.entity(entity).despawn();
             }
-            spawn_player_at_point(&mut commands, get_levels()[current_level + 1].spawn_point);
+            if current_level != 0 {
+                spawn_player_at_point(&mut commands, get_levels()[current_level + 1].spawn_point);
+            }
         }
 
         if fade_to_black.timer.just_finished() {
