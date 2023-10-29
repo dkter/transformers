@@ -238,6 +238,32 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
         },
         LevelData {
             blocks: vec![
+                // frame
+                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
+                Block { x: -600.0, y: -250.0, w: 1200.0, h: 150.0 },
+                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
+                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
+                // wall
+                Block { x: 150.0, y: -100.0, w: 50.0, h: 200.0 },
+                // small blocks
+                Block { x: -250.0, y: -150.0, w: 50.0, h: 50.0 },
+                Block { x: -150.0, y: -50.0, w: 100.0, h: 50.0 },
+            ],
+            transformers: vec![
+                (-225.0, -125.0, Transformation::AddRight),
+                (-75.0, -25.0, Transformation::RotateCw),
+            ],
+            cave: Cave {
+                position: Vec2::new(475.0, -125.0),
+                squares: vec![SquarePos(0, 0), SquarePos(0, 1), SquarePos(1, 1)],
+            },
+            background: Some(String::from("backgrounds/level5.png")),
+            spawn_point: (-550.0, -100.0),
+            button_pos: None,
+            text_blocks: vec![],
+        },
+        LevelData {
+            blocks: vec![
                 Block { x: -400.0, y: -200.0, w: 800.0, h: 50.0 },
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
             ],
@@ -402,7 +428,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, &asset_server, 0);
+    start_level(&mut commands, &asset_server, 5);
 }
 
 pub fn next_level(

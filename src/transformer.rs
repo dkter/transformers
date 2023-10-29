@@ -22,7 +22,7 @@ impl Transformation {
             },
             Transformation::RotateCw => {
                 for square in &mut player.squares {
-                    *square = SquarePos(square.1, h - square.0 - 1);
+                    *square = SquarePos(square.1, w - square.0 - 1);
                 }
             }
         }
