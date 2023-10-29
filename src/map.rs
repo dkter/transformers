@@ -134,6 +134,32 @@ pub fn get_levels() -> Vec<LevelData> {
         },
         LevelData {
             blocks: vec![
+                // frame
+                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
+                Block { x: -600.0, y: -250.0, w: 1200.0, h: 150.0 },
+                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
+                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
+                // big ground blocks
+                Block { x: -550.0, y: 100.0, w: 450.0, h: 450.0 },
+                Block { x: 150.0, y: 100.0, w: 450.0, h: 450.0 },
+                // small blocks
+                Block { x: 0.0, y: 50.0, w: 50.0, h: 50.0 },
+                Block { x: 0.0, y: 200.0, w: 50.0, h: 50.0 },
+                Block { x: 200.0, y: 350.0, w: 50.0, h: 50.0 },
+            ],
+            transformers: vec![
+                (175.0, 125.0, Transformation::AddRight),
+            ],
+            cave: Cave {
+                position: Vec2::new(500.0, 200.0),
+                squares: vec![SquarePos(0, 0)],
+            },
+            background: Some(String::from("backgrounds/level3.png")),
+            spawn_point: (-550.0, 300.0),
+            button_pos: None,
+        },
+        LevelData {
+            blocks: vec![
                 Block { x: -400.0, y: -200.0, w: 800.0, h: 50.0 },
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
             ],
