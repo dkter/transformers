@@ -152,20 +152,26 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 pub fn next_level(
     mut commands: Commands,
-    player_info: Query<(&Player, &Transform)>,
-    caves: Query<(&Cave, &Transform)>,
+    mut player_info: Query<(Entity, &Player, &mut Transform, &mut Velocity)>,
+    caves: Query<&Cave>,
     mut level_transitioning: ResMut<LevelTransitioning>,
 ) {
     if level_transitioning.0 {
         return;
     }
     let mut new_level = false;
-    for (player, player_transform) in &player_info {
-        for (cave, cave_transform) in &caves {
-            if (player_transform.translation.x - cave_transform.translation.x).abs() < PLAYER_WIDTH / 2.0
-                    && (player_transform.translation.y - cave_transform.translation.y).abs() < PLAYER_HEIGHT / 2.0
+    for (player_entity, player, mut player_transform, mut velocity) in &mut player_info {
+        for cave in &caves {
+            let (w, h) = cave.get_dimens();
+            let cave_x = cave.position.x - w as f32 * PLAYER_WIDTH / 2.0;
+            let cave_y = cave.position.y - h as f32 * PLAYER_HEIGHT / 2.0;
+            if (player_transform.translation.x - cave_x).abs() < PLAYER_WIDTH / 2.0
+                    && (player_transform.translation.y - cave_y).abs() < PLAYER_HEIGHT / 2.0
                     && cave.matches_player(&player) {
                 // new level
+                player_transform.translation = Vec3::new(cave_x, cave_y, 0.0);
+                velocity.linvel = Vec2::new(0.0, 0.0);
+                commands.entity(player_entity).remove::<RigidBody>();
                 new_level = true;
             }
         }

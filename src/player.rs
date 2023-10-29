@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
+use crate::LevelTransitioning;
 
 pub const PLAYER_WIDTH: f32 = 50.0;
 pub const PLAYER_HEIGHT: f32 = 50.0;
@@ -95,7 +96,11 @@ pub fn spawn_player(mut commands: Commands) {
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     mut player_info: Query<(&mut Player, &mut Velocity)>,
+    level_transitioning: ResMut<LevelTransitioning>,
 ) {
+    if level_transitioning.0 {
+        return;
+    }
     for (mut player, mut velocity) in &mut player_info {
         let left = keyboard_input.pressed(KeyCode::Left);
         let right = keyboard_input.pressed(KeyCode::Right);
