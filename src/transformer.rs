@@ -3,20 +3,6 @@ use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use crate::player::{Player, SquarePos};
 
-const FILL_COLOR: Color = Color::Rgba {
-    red: 0.9137,
-    green: 0.1176,
-    blue: 0.3882,
-    alpha: 1.0,
-};
-
-const STROKE_COLOR: Color = Color::Rgba {
-    red: 0.9255,
-    green: 0.2510,
-    blue: 0.4784,
-    alpha: 1.0,
-};
-
 #[derive(Copy, Clone)]
 pub enum Transformation {
     AddRight,
@@ -41,6 +27,14 @@ impl Transformation {
             }
         }
     }
+
+    fn get_sprite_path(&self) -> &str {
+        match self {
+            Transformation::AddRight => "transformers/add_right.png",
+            Transformation::AddTop => "transformers/add_top.png",
+            Transformation::RotateCw => "transformers/rotate_cw.png",
+        }
+    }
 }
 
 #[derive(Component)]
@@ -58,36 +52,24 @@ impl Transformer {
             transformation,
         }
     }
-
-    fn get_shape(&self) -> shapes::Circle {
-        shapes::Circle {
-            radius: self.radius,
-            center: self.position,
-        }
-    }
 }
 
 
 #[derive(Bundle)]
 pub struct TransformerBundle {
-    shape_bundle: ShapeBundle,
-    fill: Fill,
-    stroke: Stroke,
+    sprite_bundle: SpriteBundle,
     transformer: Transformer,
 }
 
 impl TransformerBundle {
-    pub fn new(x: f32, y: f32, transformation: Transformation) -> Self {
+    pub fn new(x: f32, y: f32, transformation: Transformation, asset_server: &Res<AssetServer>) -> Self {
         let transformer = Transformer::new(x, y, transformation);
-        let shape = transformer.get_shape();
         TransformerBundle {
-            shape_bundle: ShapeBundle {
-                path: GeometryBuilder::build_as(&shape),
-                transform: Transform::from_xyz(0.0, 0.0, -1.0),
+            sprite_bundle: SpriteBundle {
+                texture: asset_server.load(transformation.get_sprite_path()),
+                transform: Transform::from_xyz(x, y, -1.0),
                 ..default()
             },
-            fill: Fill::color(FILL_COLOR),
-            stroke: Stroke::new(STROKE_COLOR, 10.0),
             transformer,
         }
     }
