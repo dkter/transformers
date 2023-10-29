@@ -17,7 +17,8 @@ const STROKE_COLOR: Color = Color::Rgba {
     alpha: 1.0,
 };
 
-enum Transformation {
+#[derive(Copy, Clone)]
+pub enum Transformation {
     AddRight,
 }
 
@@ -57,19 +58,29 @@ impl Transformer {
 }
 
 
-pub fn spawn_transformer(mut commands: Commands) {
-    let transformer = Transformer::new(-100.0, -175.0, Transformation::AddRight);
-    let shape = transformer.get_shape();
-    commands.spawn((
-        ShapeBundle {
-            path: GeometryBuilder::build_as(&shape),
-            transform: Transform::from_xyz(0.0, 0.0, -1.0),
-            ..default()
-        },
-        Fill::color(FILL_COLOR),
-        Stroke::new(STROKE_COLOR, 10.0),
-        transformer,
-    ));
+#[derive(Bundle)]
+pub struct TransformerBundle {
+    shape_bundle: ShapeBundle,
+    fill: Fill,
+    stroke: Stroke,
+    transformer: Transformer,
+}
+
+impl TransformerBundle {
+    pub fn new(x: f32, y: f32, transformation: Transformation) -> Self {
+        let transformer = Transformer::new(x, y, transformation);
+        let shape = transformer.get_shape();
+        TransformerBundle {
+            shape_bundle: ShapeBundle {
+                path: GeometryBuilder::build_as(&shape),
+                transform: Transform::from_xyz(0.0, 0.0, -1.0),
+                ..default()
+            },
+            fill: Fill::color(FILL_COLOR),
+            stroke: Stroke::new(STROKE_COLOR, 10.0),
+            transformer,
+        }
+    }
 }
 
 
