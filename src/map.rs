@@ -44,6 +44,7 @@ struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
     cave: Cave,
+    background: Option<String>,
 }
 
 fn get_levels() -> Vec<LevelData> {
@@ -70,7 +71,8 @@ fn get_levels() -> Vec<LevelData> {
             cave: Cave {
                 position: Vec2::new(500.0, -250.0),
                 squares: vec![SquarePos(0, 0)],
-            }
+            },
+            background: Some(String::from("backgrounds/level0.png")),
         },
         LevelData {
             blocks: vec![
@@ -83,7 +85,8 @@ fn get_levels() -> Vec<LevelData> {
             cave: Cave {
                 position: Vec2::new(-350.0, -150.0),
                 squares: vec![SquarePos(0, 0)],
-            }
+            },
+            background: None,
         },
         LevelData {
             blocks: vec![
@@ -95,14 +98,25 @@ fn get_levels() -> Vec<LevelData> {
             cave: Cave {
                 position: Vec2::new(-400.0, -200.0),
                 squares: vec![SquarePos(0, 0)],
-            }
+            },
+            background: None,
         },
     ]
 }
 
-pub fn start_level(commands: &mut Commands, levelid: usize) {
+pub fn start_level(commands: &mut Commands, asset_server: Res<AssetServer>, levelid: usize) {
     let levels = get_levels();
     let level = &levels[levelid];
+    if let Some(background_path) = &level.background {
+        commands.spawn((
+            SpriteBundle {
+                texture: asset_server.load(background_path),
+                transform: Transform::from_xyz(0.0, 0.0, -2.0).with_scale(Vec3::new(0.5, 0.5, 1.0)),
+                ..default()
+            },
+            Level(levelid),
+        ));
+    }
     for block in &level.blocks {
         commands.spawn((
             block.to_sprite_bundle(),
@@ -123,12 +137,13 @@ pub fn start_level(commands: &mut Commands, levelid: usize) {
     ));
 }
 
-pub fn spawn_map(mut commands: Commands) {
-    start_level(&mut commands, 0);
+pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
+    start_level(&mut commands, asset_server, 0);
 }
 
 pub fn next_level(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     levels: Query<&Level>,
     level_entities: Query<Entity, With<Level>>,
     player_entities: Query<Entity, With<Player>>,
@@ -151,7 +166,7 @@ pub fn next_level(
         for entity in &level_entities {
             commands.entity(entity).despawn();
         }
-        start_level(&mut commands, current_level + 1);
+        start_level(&mut commands, asset_server, current_level + 1);
         for entity in &player_entities {
             commands.entity(entity).despawn();
         }
