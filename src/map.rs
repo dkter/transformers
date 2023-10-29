@@ -308,7 +308,14 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
             background: None,
             spawn_point: (0.0, 0.0),
             button_pos: None,
-            text_blocks: vec![],
+            text_blocks: vec![
+                TextBlock {
+                    text: "The end, you win (this is just a test level that I never removed)".to_string(),
+                    position: Vec2::new(25.0, 25.0),
+                    font_size: 18.0,
+                    min_width: Some(500.0),
+                },
+            ],
         },
         LevelData {
             blocks: vec![
