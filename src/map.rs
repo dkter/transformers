@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    text::{Text2dBounds, BreakLineOn},
+};
 use bevy_rapier2d::prelude::*;
 use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos};
 use crate::transformer::{TransformerBundle, Transformation};
@@ -119,7 +122,9 @@ pub fn get_levels() -> Vec<LevelData> {
             ],
         },
         LevelData {
-            blocks: vec![],
+            blocks: vec![
+                Block { x: -600.0, y: 550.0, w: 1200.0, h: 50.0 },
+            ],
             transformers: vec![],
             cave: Cave {
                 position: Vec2::new(500.0, 500.0),
@@ -127,8 +132,19 @@ pub fn get_levels() -> Vec<LevelData> {
             },
             background: Some(String::from("backgrounds/level1.png")),
             spawn_point: (-550.0, -500.0),
-            button_pos: Some((200.0, 150.0)),
-            text_blocks: vec![],
+            button_pos: Some((200.0, 200.0)),
+            text_blocks: vec![
+                TextBlock {
+                    text: "I've always been a square. It's a nice life, to be honest. I spend my days navigating the world, never stopping twice in the same place, and always ending the day in a conveniently placed cave, exactly my size and shape. It's like the world was made for me.
+
+But I've been hearing that things are changing. I've been hearing of these strange machines, machines that can change my shape into something that is no longer a square. Something more complex. I didn't even know that was possible. But what I do know is that they pull you in. Once you get too close, you can't stop them — they transform you, whether you like it or not.
+
+I can't afford to change my shape. I won't be able to fit into my caves anymore. Whatever I do, I need to avoid those strange machines at all costs.".to_string(),
+                    position: Vec2::new(25.0, 25.0),
+                    font_size: 18.0,
+                    min_width: Some(500.0),
+                },
+            ],
         },
         LevelData {
             blocks: vec![
@@ -264,7 +280,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
     if let Some(button_pos) = &level_data.button_pos {
         let text_style = TextStyle {
             font: font.clone(),
-            font_size: 14.0,
+            font_size: 18.0,
             color: Color::WHITE,
         };
         commands.spawn((
@@ -327,7 +343,15 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
         };
         commands.spawn((
             Text2dBundle {
-                text: Text::from_section(&text_block.text, text_style),
+                text: Text {
+                    sections: vec![TextSection::new(&text_block.text, text_style)],
+                    alignment: TextAlignment::Left,
+                    linebreak_behavior: BreakLineOn::WordBoundary,
+                },
+                text_2d_bounds: match text_block.min_width {
+                    Some(w) => Text2dBounds { size: Vec2::new(w, 800.0) },
+                    None => Text2dBounds::UNBOUNDED,
+                },
                 transform: Transform::from_xyz(text_block.position.x, text_block.position.y, 0.0),
                 ..default()
             },
