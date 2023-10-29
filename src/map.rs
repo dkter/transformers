@@ -35,14 +35,17 @@ impl Block {
     }
 }
 
-struct Level {
+#[derive(Component)]
+struct Level(usize);
+
+struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
 }
 
-fn get_levels() -> Vec<Level> {
+fn get_levels() -> Vec<LevelData> {
     vec![
-        Level {
+        LevelData {
             blocks: vec![
                 Block { x: -400.0, y: -200.0, w: 800.0, h: 50.0 },
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
@@ -50,21 +53,37 @@ fn get_levels() -> Vec<Level> {
             transformers: vec![
                 (-100.0, -175.0, Transformation::AddRight),
             ],
-        }
+        },
+        LevelData {
+            blocks: vec![
+                Block { x: -300.0, y: -300.0, w: 600.0, h: 50.0 },
+            ],
+            transformers: vec![
+                (-100.0, -275.0, Transformation::AddRight),
+            ],
+        },
     ]
 }
 
-pub fn spawn_map(mut commands: Commands) {
+pub fn start_level(mut commands: Commands, levelid: usize) {
     let levels = get_levels();
-    let level = &levels[0];
+    let level = &levels[levelid];
     for block in &level.blocks {
         commands.spawn((
             block.to_sprite_bundle(),
             block.to_collider(),
+            Level(levelid),
         ));
     }
     for transformer_args in &level.transformers {
         let (x, y, transformation) = transformer_args;
-        commands.spawn(TransformerBundle::new(*x, *y, *transformation));
+        commands.spawn((
+            TransformerBundle::new(*x, *y, *transformation),
+            Level(levelid),
+        ));
     }
+}
+
+pub fn spawn_map(commands: Commands) {
+    start_level(commands, 0);
 }
