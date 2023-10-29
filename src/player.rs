@@ -68,7 +68,7 @@ pub fn spawn_player(mut commands: Commands) {
         Ccd::enabled(),
         LockedAxes::ROTATION_LOCKED,
         ColliderMassProperties::Density(2.0),
-        GravityScale(3.0),
+        GravityScale(4.0),
         Velocity::zero(),
         player,
     ));
@@ -85,7 +85,7 @@ pub fn move_player(
         let x = (-(left as i8) + right as i8) as f32;
         let y_delta = if keyboard_input.pressed(KeyCode::Up) && !player.is_jumping {
             player.is_jumping = true;
-            200.0
+            300.0
         } else {
             0.0
         };
