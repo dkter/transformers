@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use crate::player::SquarePos;
 use crate::transformer::{TransformerBundle, Transformation};
+use crate::cave::{Cave, CaveBundle};
 
 struct Block {
     x: f32,
@@ -41,6 +43,7 @@ struct Level(usize);
 struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
+    cave: Cave,
 }
 
 fn get_levels() -> Vec<LevelData> {
@@ -53,6 +56,10 @@ fn get_levels() -> Vec<LevelData> {
             transformers: vec![
                 (-100.0, -175.0, Transformation::AddRight),
             ],
+            cave: Cave {
+                position: Vec2::new(-350.0, -150.0),
+                squares: vec![SquarePos(0, 0)],
+            }
         },
         LevelData {
             blocks: vec![
@@ -61,6 +68,10 @@ fn get_levels() -> Vec<LevelData> {
             transformers: vec![
                 (-100.0, -275.0, Transformation::AddRight),
             ],
+            cave: Cave {
+                position: Vec2::new(-400.0, -200.0),
+                squares: vec![SquarePos(0, 0)],
+            }
         },
     ]
 }
@@ -82,6 +93,10 @@ pub fn start_level(mut commands: Commands, levelid: usize) {
             Level(levelid),
         ));
     }
+    commands.spawn((
+        CaveBundle::new(level.cave.clone()),
+        Level(levelid),
+    ));
 }
 
 pub fn spawn_map(commands: Commands) {

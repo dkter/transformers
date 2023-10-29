@@ -1,6 +1,7 @@
 mod player;
 mod map;
 mod transformer;
+mod cave;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;

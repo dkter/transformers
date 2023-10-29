@@ -2,11 +2,11 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
-const PLAYER_WIDTH: f32 = 50.0;
-const PLAYER_HEIGHT: f32 = 50.0;
+pub const PLAYER_WIDTH: f32 = 50.0;
+pub const PLAYER_HEIGHT: f32 = 50.0;
 
-
-pub struct SquarePos(i32, i32);
+#[derive(Copy, Clone)]
+pub struct SquarePos(pub i32, pub i32);
 
 #[derive(Component)]
 pub struct Player {
