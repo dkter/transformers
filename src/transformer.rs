@@ -48,7 +48,7 @@ impl Transformer {
     fn new(x: f32, y: f32, transformation: Transformation) -> Self {
         Transformer {
             position: Vec2::new(x, y),
-            radius: 30.0,
+            radius: 35.0,
             transformation,
         }
     }
@@ -77,10 +77,10 @@ impl TransformerBundle {
 
 
 pub fn apply_transformations(
-    mut player_info: Query<(&mut Player, &mut Collider, &mut Path, &Transform)>,
+    mut player_info: Query<(&mut Player, &mut Collider, &mut Path, &mut Transform)>,
     transformers: Query<&Transformer>,
 ) {
-    for (mut player, mut collider, mut path, player_transform) in &mut player_info {
+    for (mut player, mut collider, mut path, mut player_transform) in &mut player_info {
         let mut collided_with_transformer = false;
         for transformer in &transformers {
             let distance = collider.distance_to_point(
@@ -95,6 +95,7 @@ pub fn apply_transformations(
                     transformer.transformation.apply(&mut player);
                     *path = player.get_shape();
                     *collider = player.get_collider();
+                    player_transform.translation = Vec3::new(transformer.position.x, transformer.position.y, 0.0);
                 }
                 collided_with_transformer = true;
             }

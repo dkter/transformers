@@ -435,7 +435,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, &asset_server, 2);
+    start_level(&mut commands, &asset_server, 5);
 }
 
 pub fn next_level(
