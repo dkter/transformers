@@ -50,6 +50,30 @@ fn get_levels() -> Vec<LevelData> {
     vec![
         LevelData {
             blocks: vec![
+                // frame
+                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
+                Block { x: -600.0, y: -350.0, w: 1200.0, h: 50.0 },
+                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
+                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
+                // pole
+                Block { x: 300.0, y: -100.0, w: 50.0, h: 250.0 },
+                // misc platforms
+                Block { x: -100.0, y: -250.0, w: 100.0, h: 50.0 },
+                Block { x: -250.0, y: -200.0, w: 100.0, h: 50.0 },
+                Block { x: -450.0, y: -100.0, w: 250.0, h: 50.0 },
+                Block { x: -450.0, y: -50.0, w: 50.0, h: 50.0 },
+                Block { x: -350.0, y: 50.0, w: 50.0, h: 50.0 },
+                Block { x: -300.0, y: 150.0, w: 50.0, h: 50.0 },
+                Block { x: -250.0, y: 250.0, w: 350.0, h: 50.0 },
+            ],
+            transformers: vec![],
+            cave: Cave {
+                position: Vec2::new(500.0, -250.0),
+                squares: vec![SquarePos(0, 0)],
+            }
+        },
+        LevelData {
+            blocks: vec![
                 Block { x: -400.0, y: -200.0, w: 800.0, h: 50.0 },
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
             ],
