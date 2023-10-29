@@ -34,8 +34,17 @@ fn main() {
     App::new()
         .add_systems(Startup, (setup, spawn_player, spawn_map, spawn_transformer))
         .add_systems(Update, (move_player, player::set_jumping_false, apply_transformations, check_restart))
-        .add_plugins(DefaultPlugins)
-        .add_plugins(ShapePlugin)
-        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+        .add_plugins((
+            DefaultPlugins.set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "cool game".into(),
+                    resolution: (1200., 800.).into(),
+                    ..default()
+                }),
+                ..default()
+            }),
+            ShapePlugin,
+            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
+        ))
         .run();
 }
