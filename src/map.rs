@@ -58,6 +58,13 @@ pub struct Level {
     pub spawn_point: (f32, f32),
 }
 
+struct TextBlock {
+    text: String,
+    position: Vec2,
+    font_size: f32,
+    min_width: Option<f32>,
+}
+
 pub struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
@@ -65,6 +72,7 @@ pub struct LevelData {
     background: Option<String>,
     pub spawn_point: (f32, f32),
     button_pos: Option<(f32, f32)>,
+    text_blocks: Vec<TextBlock>,
 }
 
 pub fn get_levels() -> Vec<LevelData> {
@@ -95,6 +103,20 @@ pub fn get_levels() -> Vec<LevelData> {
             background: Some(String::from("backgrounds/level0.png")),
             spawn_point: (-550.0, -200.0),
             button_pos: None,
+            text_blocks: vec![
+                TextBlock {
+                    text: "Transformers".to_string(),
+                    position: Vec2::new(75.0, 25.0),
+                    font_size: 34.0,
+                    min_width: None,
+                },
+                TextBlock {
+                    text: "(a GDC Game Jam game by david)".to_string(),
+                    position: Vec2::new(75.0, -25.0),
+                    font_size: 14.0,
+                    min_width: None,
+                },
+            ],
         },
         LevelData {
             blocks: vec![],
@@ -106,6 +128,7 @@ pub fn get_levels() -> Vec<LevelData> {
             background: Some(String::from("backgrounds/level1.png")),
             spawn_point: (-550.0, -500.0),
             button_pos: Some((200.0, 150.0)),
+            text_blocks: vec![],
         },
         LevelData {
             blocks: vec![
@@ -131,6 +154,7 @@ pub fn get_levels() -> Vec<LevelData> {
             background: Some(String::from("backgrounds/level2.png")),
             spawn_point: (-550.0, -100.0),
             button_pos: None,
+            text_blocks: vec![],
         },
         LevelData {
             blocks: vec![
@@ -157,6 +181,7 @@ pub fn get_levels() -> Vec<LevelData> {
             background: Some(String::from("backgrounds/level3.png")),
             spawn_point: (-550.0, 300.0),
             button_pos: None,
+            text_blocks: vec![],
         },
         LevelData {
             blocks: vec![
@@ -173,6 +198,7 @@ pub fn get_levels() -> Vec<LevelData> {
             background: None,
             spawn_point: (0.0, 0.0),
             button_pos: None,
+            text_blocks: vec![],
         },
         LevelData {
             blocks: vec![
@@ -188,6 +214,7 @@ pub fn get_levels() -> Vec<LevelData> {
             background: None,
             spawn_point: (0.0, 0.0),
             button_pos: None,
+            text_blocks: vec![],
         },
     ]
 }
@@ -223,6 +250,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
     let levels = get_levels();
     let level_data = &levels[levelid];
     let level = Level { levelid, spawn_point: level_data.spawn_point };
+    let font = asset_server.load("fonts/bahnschrift.ttf");
     if let Some(background_path) = &level_data.background {
         commands.spawn((
             SpriteBundle {
@@ -234,7 +262,6 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
         ));
     }
     if let Some(button_pos) = &level_data.button_pos {
-        let font = asset_server.load("fonts/bahnschrift.ttf");
         let text_style = TextStyle {
             font: font.clone(),
             font_size: 14.0,
@@ -289,6 +316,21 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
         let (x, y, transformation) = transformer_args;
         commands.spawn((
             TransformerBundle::new(*x, *y, *transformation),
+            level,
+        ));
+    }
+    for text_block in &level_data.text_blocks {
+        let text_style = TextStyle {
+            font: font.clone(),
+            font_size: text_block.font_size,
+            color: Color::WHITE,
+        };
+        commands.spawn((
+            Text2dBundle {
+                text: Text::from_section(&text_block.text, text_style),
+                transform: Transform::from_xyz(text_block.position.x, text_block.position.y, 0.0),
+                ..default()
+            },
             level,
         ));
     }
