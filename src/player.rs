@@ -48,6 +48,11 @@ impl Player {
     }
 
     pub fn add_square(&mut self, x: i32, y: i32) {
+        for square in &self.squares {
+            if square.0 == x && square.1 == y {
+                return;
+            }
+        }
         self.squares.push(SquarePos(x, y));
     }
 }
