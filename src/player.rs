@@ -11,6 +11,7 @@ pub struct SquarePos(i32, i32);
 #[derive(Component)]
 pub struct Player {
     is_jumping: bool,
+    pub is_being_transformed: bool,
     squares: Vec<SquarePos>,
 }
 
@@ -18,11 +19,12 @@ impl Player {
     fn new() -> Self {
         Player {
             is_jumping: false,
-            squares: vec![SquarePos(0, 0), SquarePos(0, 1), SquarePos(1, 1)],
+            is_being_transformed: false,
+            squares: vec![SquarePos(0, 0)],
         }
     }
 
-    fn get_shape(&self) -> Path {
+    pub fn get_shape(&self) -> Path {
         let mut builder = GeometryBuilder::new();
         for square in &self.squares {
             builder = builder.add(&shapes::Rectangle {
@@ -33,7 +35,7 @@ impl Player {
         builder.build()
     }
 
-    fn get_collider(&self) -> Collider {
+    pub fn get_collider(&self) -> Collider {
         let shape_tuples = self.squares.iter().map(|square|
             (
                 Vec2::new(PLAYER_WIDTH * square.0 as f32, PLAYER_HEIGHT * square.1 as f32),

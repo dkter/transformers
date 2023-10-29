@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use player::{Player, spawn_player, move_player};
-use transformer::{spawn_transformer};
+use transformer::{spawn_transformer, apply_transformations};
 use map::spawn_map;
 
 fn setup(
@@ -33,7 +33,7 @@ fn check_restart(
 fn main() {
     App::new()
         .add_systems(Startup, (setup, spawn_player, spawn_map, spawn_transformer))
-        .add_systems(Update, (move_player, player::set_jumping_false, check_restart))
+        .add_systems(Update, (move_player, player::set_jumping_false, apply_transformations, check_restart))
         .add_plugins(DefaultPlugins)
         .add_plugins(ShapePlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))

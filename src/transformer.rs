@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use crate::player::Player;
 
@@ -21,7 +22,7 @@ enum Transformation {
 }
 
 impl Transformation {
-    fn apply(&mut self, player: &mut Player) {
+    fn apply(&self, player: &mut Player) {
         match self {
             Transformation::AddRight => {
                 // in the future, figure out what the bottom right pos is, but for now
@@ -69,4 +70,34 @@ pub fn spawn_transformer(mut commands: Commands) {
         Stroke::new(STROKE_COLOR, 10.0),
         transformer,
     ));
+}
+
+
+pub fn apply_transformations(
+    mut player_info: Query<(&mut Player, &mut Collider, &mut Path, &Transform)>,
+    transformers: Query<&Transformer>,
+) {
+    for (mut player, mut collider, mut path, player_transform) in &mut player_info {
+        let mut collided_with_transformer = false;
+        for transformer in &transformers {
+            let distance = collider.distance_to_point(
+                Vec2::new(player_transform.translation.x, player_transform.translation.y),
+                0.0,
+                transformer.position,
+                true
+            );
+            if distance < transformer.radius {
+                if !player.is_being_transformed {
+                    player.is_being_transformed = true;
+                    transformer.transformation.apply(&mut player);
+                    *path = player.get_shape();
+                    *collider = player.get_collider();
+                }
+                collided_with_transformer = true;
+            }
+        }
+        if !collided_with_transformer {
+            player.is_being_transformed = false;
+        }
+    }
 }
