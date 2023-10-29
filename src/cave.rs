@@ -2,13 +2,6 @@ use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use crate::player::{PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos};
 
-const BORDER_COLOR: Color = Color::Rgba {
-    red: 0.37109375,
-    green: 0.36328125,
-    blue: 0.39453125,
-    alpha: 1.0,
-};
-
 const INNER_COLOR: Color = Color::Rgba {
     red: 0.9765625,
     green: 0.94140625,
