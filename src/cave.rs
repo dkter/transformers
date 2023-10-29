@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::player::{PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos};
+use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos};
 
 const INNER_COLOR: Color = Color::Rgba {
     red: 0.9765625,
@@ -16,7 +16,7 @@ pub struct Cave {
 }
 
 impl Cave {
-    fn get_dimens(&self) -> (i32, i32) {
+    pub fn get_dimens(&self) -> (i32, i32) {
         let mut max_x = 0;
         let mut max_y = 0;
         for square in &self.squares {
@@ -39,6 +39,23 @@ impl Cave {
             });
         }
         builder.build()
+    }
+
+    pub fn matches_player(&self, player: &Player) -> bool {
+        if self.squares.len() != player.squares.len() {
+            return false;
+        }
+        for square in &self.squares {
+            let mut found: bool = false;
+            for square2 in &player.squares {
+                if square.0 == square2.0 && square.1 == square2.1 {
+                    found = true;
+                    break;
+                }
+            }
+            if !found { return false; }
+        }
+        true
     }
 }
 

@@ -8,7 +8,7 @@ use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use player::{Player, spawn_player, move_player};
 use transformer::apply_transformations;
-use map::spawn_map;
+use map::{spawn_map, next_level};
 
 fn setup(
     mut commands: Commands,
@@ -34,7 +34,13 @@ fn check_restart(
 fn main() {
     App::new()
         .add_systems(Startup, (setup, spawn_player, spawn_map))
-        .add_systems(Update, (move_player, player::set_jumping_false, apply_transformations, check_restart))
+        .add_systems(Update, (
+            move_player,
+            player::set_jumping_false,
+            apply_transformations,
+            check_restart,
+            next_level,
+        ))
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {

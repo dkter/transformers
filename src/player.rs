@@ -12,7 +12,7 @@ pub struct SquarePos(pub i32, pub i32);
 pub struct Player {
     is_jumping: bool,
     pub is_being_transformed: bool,
-    squares: Vec<SquarePos>,
+    pub squares: Vec<SquarePos>,
 }
 
 impl Player {

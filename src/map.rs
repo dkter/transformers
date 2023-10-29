@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use crate::player::SquarePos;
+use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos, spawn_player};
 use crate::transformer::{TransformerBundle, Transformation};
 use crate::cave::{Cave, CaveBundle};
 
@@ -38,7 +38,7 @@ impl Block {
 }
 
 #[derive(Component)]
-struct Level(usize);
+pub struct Level(usize);
 
 struct LevelData {
     blocks: Vec<Block>,
@@ -76,7 +76,7 @@ fn get_levels() -> Vec<LevelData> {
     ]
 }
 
-pub fn start_level(mut commands: Commands, levelid: usize) {
+pub fn start_level(commands: &mut Commands, levelid: usize) {
     let levels = get_levels();
     let level = &levels[levelid];
     for block in &level.blocks {
@@ -99,6 +99,38 @@ pub fn start_level(mut commands: Commands, levelid: usize) {
     ));
 }
 
-pub fn spawn_map(commands: Commands) {
-    start_level(commands, 0);
+pub fn spawn_map(mut commands: Commands) {
+    start_level(&mut commands, 0);
+}
+
+pub fn next_level(
+    mut commands: Commands,
+    levels: Query<&Level>,
+    level_entities: Query<Entity, With<Level>>,
+    player_entities: Query<Entity, With<Player>>,
+    player_info: Query<(&Player, &Transform)>,
+    caves: Query<(&Cave, &Transform)>,
+) {
+    let mut new_level = false;
+    for (player, player_transform) in &player_info {
+        for (cave, cave_transform) in &caves {
+            if (player_transform.translation.x - cave_transform.translation.x).abs() < PLAYER_WIDTH / 2.0
+                    && (player_transform.translation.y - cave_transform.translation.y).abs() < PLAYER_HEIGHT / 2.0
+                    && cave.matches_player(&player) {
+                // new level
+                new_level = true;
+            }
+        }
+    }
+    if new_level {
+        let current_level = levels.iter().next().unwrap().0;
+        for entity in &level_entities {
+            commands.entity(entity).despawn();
+        }
+        start_level(&mut commands, current_level + 1);
+        for entity in &player_entities {
+            commands.entity(entity).despawn();
+        }
+        spawn_player(commands);
+    }
 }
