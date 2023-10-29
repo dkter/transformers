@@ -170,7 +170,14 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
             background: Some(String::from("backgrounds/level2.png")),
             spawn_point: (-550.0, -100.0),
             button_pos: None,
-            text_blocks: vec![],
+            text_blocks: vec![
+                TextBlock {
+                    text: "(press R to restart)".to_string(),
+                    position: Vec2::new(400.0, 325.0),
+                    font_size: 14.0,
+                    min_width: None,
+                },
+            ],
         },
         LevelData {
             blocks: vec![
@@ -428,7 +435,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, &asset_server, 5);
+    start_level(&mut commands, &asset_server, 2);
 }
 
 pub fn next_level(
