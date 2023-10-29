@@ -69,7 +69,7 @@ fn get_levels() -> Vec<LevelData> {
                 Block { x: -450.0, y: -50.0, w: 50.0, h: 50.0 },
                 Block { x: -350.0, y: 50.0, w: 50.0, h: 50.0 },
                 Block { x: -300.0, y: 150.0, w: 50.0, h: 50.0 },
-                Block { x: -250.0, y: 250.0, w: 350.0, h: 50.0 },
+                Block { x: -250.0, y: 250.0, w: 200.0, h: 50.0 },
             ],
             transformers: vec![],
             cave: Cave {

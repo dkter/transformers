@@ -81,7 +81,7 @@ pub fn spawn_player_at_point(mut commands: Commands, spawn_point: (f32, f32)) {
         Ccd::enabled(),
         LockedAxes::ROTATION_LOCKED,
         ColliderMassProperties::Density(2.0),
-        GravityScale(4.0),
+        GravityScale(5.0),
         Velocity::zero(),
         player,
     ));
@@ -103,13 +103,13 @@ pub fn move_player(
         let x = (-(left as i8) + right as i8) as f32;
         let y_delta = if keyboard_input.pressed(KeyCode::Up) && !player.is_jumping {
             player.is_jumping = true;
-            300.0
+            350.0
         } else {
             0.0
         };
         let y = velocity.linvel.y + y_delta;
 
-        velocity.linvel = Vec2::new(x * 200.0, y);
+        velocity.linvel = Vec2::new(x * 300.0, y);
     }
 }
 
