@@ -8,7 +8,7 @@ use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use player::{Player, spawn_player, spawn_player_at_point, move_player};
 use transformer::apply_transformations;
-use map::{spawn_map, next_level, Level, get_levels, start_level};
+use map::{spawn_map, next_level, Level, get_levels, start_level, button_system};
 
 const WINDOW_WIDTH: f32 = 1200.0;
 const WINDOW_HEIGHT: f32 = 800.0;
@@ -121,6 +121,7 @@ fn main() {
             check_restart,
             next_level,
             fade_step,
+            button_system,
         ))
         .insert_resource(LevelTransitioning(false))
         .add_plugins((

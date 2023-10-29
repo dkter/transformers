@@ -5,6 +5,20 @@ use crate::transformer::{TransformerBundle, Transformation};
 use crate::cave::{Cave, CaveBundle};
 use crate::{spawn_fade_to_black, LevelTransitioning};
 
+const BUTTON_COLOR: Color = Color::Rgba {
+    red: 0.60546875,
+    green: 0.6015625,
+    blue: 0.58984375,
+    alpha: 1.0,
+};
+
+const BUTTON_COLOR_HOVER: Color = Color::Rgba {
+    red: 0.75390625,
+    green: 0.75,
+    blue: 0.73828125,
+    alpha: 1.0,
+};
+
 struct Block {
     x: f32,
     y: f32,
@@ -50,6 +64,7 @@ pub struct LevelData {
     cave: Cave,
     background: Option<String>,
     pub spawn_point: (f32, f32),
+    button_pos: Option<(f32, f32)>,
 }
 
 pub fn get_levels() -> Vec<LevelData> {
@@ -79,6 +94,18 @@ pub fn get_levels() -> Vec<LevelData> {
             },
             background: Some(String::from("backgrounds/level0.png")),
             spawn_point: (-550.0, -200.0),
+            button_pos: None,
+        },
+        LevelData {
+            blocks: vec![],
+            transformers: vec![],
+            cave: Cave {
+                position: Vec2::new(500.0, 500.0),
+                squares: vec![],
+            },
+            background: Some(String::from("backgrounds/level1.png")),
+            spawn_point: (-550.0, -500.0),
+            button_pos: Some((200.0, 150.0)),
         },
         LevelData {
             blocks: vec![
@@ -94,6 +121,7 @@ pub fn get_levels() -> Vec<LevelData> {
             },
             background: None,
             spawn_point: (0.0, 0.0),
+            button_pos: None,
         },
         LevelData {
             blocks: vec![
@@ -108,8 +136,36 @@ pub fn get_levels() -> Vec<LevelData> {
             },
             background: None,
             spawn_point: (0.0, 0.0),
+            button_pos: None,
         },
     ]
+}
+
+pub fn button_system(
+    mut commands: Commands,
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+    mut level_transitioning: ResMut<LevelTransitioning>,
+) {
+    for (interaction, mut color) in &mut interaction_query {
+        match *interaction {
+            Interaction::Pressed => {
+                *color = BUTTON_COLOR.into();
+                if !level_transitioning.0 {
+                    level_transitioning.0 = true;
+                    spawn_fade_to_black(&mut commands);
+                }
+            }
+            Interaction::Hovered => {
+                *color = BUTTON_COLOR_HOVER.into();
+            }
+            Interaction::None => {
+                *color = BUTTON_COLOR.into();
+            }
+        }
+    }
 }
 
 pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, levelid: usize) {
@@ -125,6 +181,51 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
             },
             level,
         ));
+    }
+    if let Some(button_pos) = &level_data.button_pos {
+        let font = asset_server.load("fonts/bahnschrift.ttf");
+        let text_style = TextStyle {
+            font: font.clone(),
+            font_size: 14.0,
+            color: Color::WHITE,
+        };
+        commands.spawn((
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    ..default()
+                },
+                transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                ..default()
+            },
+            level,
+        )).with_children(|parent| {
+                parent.spawn(
+                    ButtonBundle {
+                        style: Style {
+                            width: Val::Px(150.0),
+                            height: Val::Px(65.0),
+                            // horizontally center child text
+                            justify_content: JustifyContent::Center,
+                            // vertically center child text
+                            align_items: AlignItems::Center,
+                            left: Val::Px(button_pos.0),
+                            top: Val::Px(button_pos.1),
+                            ..default()
+                        },
+                        background_color: BUTTON_COLOR.into(),
+                        ..default()
+                    }
+                ).with_children(|parent2| {
+                    parent2.spawn(TextBundle::from_section(
+                        "(continue)",
+                        text_style,
+                    ));
+                });
+            }
+        );
     }
     for block in &level_data.blocks {
         commands.spawn((
