@@ -31,6 +31,20 @@ impl Player {
             squares: vec![SquarePos(0, 0)],
         }
     }
+    
+    pub fn get_dimens(&self) -> (i32, i32) {
+        let mut max_x = 0;
+        let mut max_y = 0;
+        for square in &self.squares {
+            if square.0 + 1 > max_x {
+                max_x = square.0 + 1;
+            }
+            if square.1 + 1 > max_y {
+                max_y = square.1 + 1;
+            }
+        }
+        (max_x, max_y)
+    }
 
     pub fn get_shape(&self) -> Path {
         let mut builder = GeometryBuilder::new();

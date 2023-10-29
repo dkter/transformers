@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::player::Player;
+use crate::player::{Player, SquarePos};
 
 const FILL_COLOR: Color = Color::Rgba {
     red: 0.9137,
@@ -20,14 +20,24 @@ const STROKE_COLOR: Color = Color::Rgba {
 #[derive(Copy, Clone)]
 pub enum Transformation {
     AddRight,
+    AddTop,
+    RotateCw,
 }
 
 impl Transformation {
     fn apply(&self, player: &mut Player) {
+        let (w, h) = player.get_dimens();
         match self {
             Transformation::AddRight => {
-                // in the future, figure out what the bottom right pos is, but for now
-                player.add_square(1, 0);
+                player.add_square(w, 0);
+            },
+            Transformation::AddTop => {
+                player.add_square(0, h);
+            },
+            Transformation::RotateCw => {
+                for square in &mut player.squares {
+                    *square = SquarePos(square.1, h - square.0 - 1);
+                }
             }
         }
     }
