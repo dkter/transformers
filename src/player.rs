@@ -5,6 +5,13 @@ use bevy_prototype_lyon::prelude::*;
 pub const PLAYER_WIDTH: f32 = 50.0;
 pub const PLAYER_HEIGHT: f32 = 50.0;
 
+const PLAYER_COLOR: Color = Color::Rgba {
+    red: 0.96484375,
+    green: 0.828125,
+    blue: 0.1796875,
+    alpha: 1.0,
+};
+
 #[derive(Copy, Clone)]
 pub struct SquarePos(pub i32, pub i32);
 
@@ -66,7 +73,7 @@ pub fn spawn_player_at_point(mut commands: Commands, spawn_point: (f32, f32)) {
             transform: Transform::from_xyz(spawn_point.0, spawn_point.1, 0.0),
             ..default()
         },
-        Fill::color(Color::YELLOW),
+        Fill::color(PLAYER_COLOR),
         RigidBody::Dynamic,
         player.get_collider(),
         ActiveEvents::CONTACT_FORCE_EVENTS,
