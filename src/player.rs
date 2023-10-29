@@ -65,7 +65,7 @@ impl Player {
 }
 
 
-pub fn spawn_player_at_point(mut commands: Commands, spawn_point: (f32, f32)) {
+pub fn spawn_player_at_point(commands: &mut Commands, spawn_point: (f32, f32)) {
     let player = Player::new();
     commands.spawn((
         ShapeBundle {
@@ -88,8 +88,8 @@ pub fn spawn_player_at_point(mut commands: Commands, spawn_point: (f32, f32)) {
 }
 
 
-pub fn spawn_player(commands: Commands) {
-    spawn_player_at_point(commands, (-550.0, -200.0));  // the spawn point for the first level
+pub fn spawn_player(mut commands: Commands) {
+    spawn_player_at_point(&mut commands, (-550.0, -200.0));  // the spawn point for the first level
 }
 
 pub fn move_player(

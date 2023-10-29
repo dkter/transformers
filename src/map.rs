@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos, spawn_player_at_point};
+use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos};
 use crate::transformer::{TransformerBundle, Transformation};
 use crate::cave::{Cave, CaveBundle};
+use crate::{spawn_fade_to_black, LevelTransitioning};
 
 struct Block {
     x: f32,
@@ -39,19 +40,19 @@ impl Block {
 
 #[derive(Component, Copy, Clone)]
 pub struct Level {
-    levelid: usize,
+    pub levelid: usize,
     pub spawn_point: (f32, f32),
 }
 
-struct LevelData {
+pub struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
     cave: Cave,
     background: Option<String>,
-    spawn_point: (f32, f32),
+    pub spawn_point: (f32, f32),
 }
 
-fn get_levels() -> Vec<LevelData> {
+pub fn get_levels() -> Vec<LevelData> {
     vec![
         LevelData {
             blocks: vec![
@@ -111,7 +112,7 @@ fn get_levels() -> Vec<LevelData> {
     ]
 }
 
-pub fn start_level(commands: &mut Commands, asset_server: Res<AssetServer>, levelid: usize) {
+pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, levelid: usize) {
     let levels = get_levels();
     let level_data = &levels[levelid];
     let level = Level { levelid, spawn_point: level_data.spawn_point };
@@ -146,18 +147,18 @@ pub fn start_level(commands: &mut Commands, asset_server: Res<AssetServer>, leve
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, asset_server, 0);
+    start_level(&mut commands, &asset_server, 0);
 }
 
 pub fn next_level(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    levels: Query<&Level>,
-    level_entities: Query<Entity, With<Level>>,
-    player_entities: Query<Entity, With<Player>>,
     player_info: Query<(&Player, &Transform)>,
     caves: Query<(&Cave, &Transform)>,
+    mut level_transitioning: ResMut<LevelTransitioning>,
 ) {
+    if level_transitioning.0 {
+        return;
+    }
     let mut new_level = false;
     for (player, player_transform) in &player_info {
         for (cave, cave_transform) in &caves {
@@ -170,14 +171,7 @@ pub fn next_level(
         }
     }
     if new_level {
-        let current_level = levels.iter().next().unwrap().levelid;
-        for entity in &level_entities {
-            commands.entity(entity).despawn();
-        }
-        start_level(&mut commands, asset_server, current_level + 1);
-        for entity in &player_entities {
-            commands.entity(entity).despawn();
-        }
-        spawn_player_at_point(commands, get_levels()[current_level + 1].spawn_point);
+        level_transitioning.0 = true;
+        spawn_fade_to_black(&mut commands);
     }
 }
