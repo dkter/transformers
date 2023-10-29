@@ -6,9 +6,9 @@ mod cave;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use player::{Player, spawn_player, move_player};
+use player::{Player, spawn_player, spawn_player_at_point, move_player};
 use transformer::apply_transformations;
-use map::{spawn_map, next_level};
+use map::{spawn_map, next_level, Level};
 
 fn setup(
     mut commands: Commands,
@@ -22,12 +22,14 @@ fn check_restart(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     player_entities: Query<Entity, With<Player>>,
+    levels: Query<&Level>,
 ) {
     if keyboard_input.just_released(KeyCode::R) {
+        let spawn_point = levels.iter().next().unwrap().spawn_point;
         for entity in &player_entities {
             commands.entity(entity).despawn();
         }
-        spawn_player(commands);
+        spawn_player_at_point(commands, spawn_point);
     }
 }
 

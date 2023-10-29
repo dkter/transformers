@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos, spawn_player};
+use crate::player::{Player, PLAYER_WIDTH, PLAYER_HEIGHT, SquarePos, spawn_player_at_point};
 use crate::transformer::{TransformerBundle, Transformation};
 use crate::cave::{Cave, CaveBundle};
 
@@ -37,14 +37,18 @@ impl Block {
     }
 }
 
-#[derive(Component)]
-pub struct Level(usize);
+#[derive(Component, Copy, Clone)]
+pub struct Level {
+    levelid: usize,
+    pub spawn_point: (f32, f32),
+}
 
 struct LevelData {
     blocks: Vec<Block>,
     transformers: Vec<(f32, f32, Transformation)>,
     cave: Cave,
     background: Option<String>,
+    spawn_point: (f32, f32),
 }
 
 fn get_levels() -> Vec<LevelData> {
@@ -73,6 +77,7 @@ fn get_levels() -> Vec<LevelData> {
                 squares: vec![SquarePos(0, 0)],
             },
             background: Some(String::from("backgrounds/level0.png")),
+            spawn_point: (-550.0, -200.0),
         },
         LevelData {
             blocks: vec![
@@ -87,6 +92,7 @@ fn get_levels() -> Vec<LevelData> {
                 squares: vec![SquarePos(0, 0)],
             },
             background: None,
+            spawn_point: (0.0, 0.0),
         },
         LevelData {
             blocks: vec![
@@ -100,40 +106,42 @@ fn get_levels() -> Vec<LevelData> {
                 squares: vec![SquarePos(0, 0)],
             },
             background: None,
+            spawn_point: (0.0, 0.0),
         },
     ]
 }
 
 pub fn start_level(commands: &mut Commands, asset_server: Res<AssetServer>, levelid: usize) {
     let levels = get_levels();
-    let level = &levels[levelid];
-    if let Some(background_path) = &level.background {
+    let level_data = &levels[levelid];
+    let level = Level { levelid, spawn_point: level_data.spawn_point };
+    if let Some(background_path) = &level_data.background {
         commands.spawn((
             SpriteBundle {
                 texture: asset_server.load(background_path),
                 transform: Transform::from_xyz(0.0, 0.0, -2.0).with_scale(Vec3::new(0.5, 0.5, 1.0)),
                 ..default()
             },
-            Level(levelid),
+            level,
         ));
     }
-    for block in &level.blocks {
+    for block in &level_data.blocks {
         commands.spawn((
             block.to_sprite_bundle(),
             block.to_collider(),
-            Level(levelid),
+            level,
         ));
     }
-    for transformer_args in &level.transformers {
+    for transformer_args in &level_data.transformers {
         let (x, y, transformation) = transformer_args;
         commands.spawn((
             TransformerBundle::new(*x, *y, *transformation),
-            Level(levelid),
+            level,
         ));
     }
     commands.spawn((
-        CaveBundle::new(level.cave.clone()),
-        Level(levelid),
+        CaveBundle::new(level_data.cave.clone()),
+        level,
     ));
 }
 
@@ -162,7 +170,7 @@ pub fn next_level(
         }
     }
     if new_level {
-        let current_level = levels.iter().next().unwrap().0;
+        let current_level = levels.iter().next().unwrap().levelid;
         for entity in &level_entities {
             commands.entity(entity).despawn();
         }
@@ -170,6 +178,6 @@ pub fn next_level(
         for entity in &player_entities {
             commands.entity(entity).despawn();
         }
-        spawn_player(commands);
+        spawn_player_at_point(commands, get_levels()[current_level + 1].spawn_point);
     }
 }

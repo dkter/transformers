@@ -58,11 +58,12 @@ impl Player {
 }
 
 
-pub fn spawn_player(mut commands: Commands) {
+pub fn spawn_player_at_point(mut commands: Commands, spawn_point: (f32, f32)) {
     let player = Player::new();
     commands.spawn((
         ShapeBundle {
             path: player.get_shape(),
+            transform: Transform::from_xyz(spawn_point.0, spawn_point.1, 0.0),
             ..default()
         },
         Fill::color(Color::YELLOW),
@@ -77,6 +78,11 @@ pub fn spawn_player(mut commands: Commands) {
         Velocity::zero(),
         player,
     ));
+}
+
+
+pub fn spawn_player(commands: Commands) {
+    spawn_player_at_point(commands, (-550.0, -200.0));  // the spawn point for the first level
 }
 
 pub fn move_player(
