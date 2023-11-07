@@ -2,6 +2,12 @@
 
 It's a game! Made with Rust + [bevy](https://bevyengine.org/) + [rapier](https://rapier.rs/).
 
+_Transformers_ was awarded Best Use of Theme (which was "Strange Machines") at the 2023 University of Waterloo Game Jam.
+
+## Play
+
+_Transformers_ can be played in the browser [here](https://david.industries/transformers). Alternatively, a Windows (.exe) build can be downloaded from [itch.io](https://dkter.itch.io/transformers).
+
 ## Building
 
 ```cargo build --release```
