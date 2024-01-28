@@ -247,6 +247,30 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
             blocks: vec![
                 // frame
                 Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
+                Block { x: -600.0, y: -350.0, w: 1200.0, h: 50.0 },
+                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
+                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
+                // big blocks
+                Block { x: -600.0, y: 150.0, w: 475.0, h: 300.0 },
+                Block { x: -50.0, y: 150.0, w: 600.0, h: 300.0 },
+            ],
+            transformers: vec![
+                (200.0, 175.0, Transformation::AddRight, Vec2::new(100.0, 200.0)),
+                (500.0, 175.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
+            ],
+            cave: Cave {
+                position: Vec2::new(500.0, -225.0),
+                squares: vec![SquarePos(0, 0), SquarePos(0, 1)],
+            },
+            background: Some(String::from("backgrounds/level6.png")),
+            spawn_point: (-550.0, 300.0),
+            button_pos: None,
+            text_blocks: vec![],
+        },
+        LevelData {
+            blocks: vec![
+                // frame
+                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
                 Block { x: -600.0, y: -250.0, w: 1200.0, h: 150.0 },
                 Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
                 Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
@@ -267,30 +291,6 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
             },
             background: Some(String::from("backgrounds/level5.png")),
             spawn_point: (-550.0, -100.0),
-            button_pos: None,
-            text_blocks: vec![],
-        },
-        LevelData {
-            blocks: vec![
-                // frame
-                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
-                Block { x: -600.0, y: -350.0, w: 1200.0, h: 50.0 },
-                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
-                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
-                // big blocks
-                Block { x: -600.0, y: 150.0, w: 475.0, h: 300.0 },
-                Block { x: -50.0, y: 150.0, w: 600.0, h: 300.0 },
-            ],
-            transformers: vec![
-                (200.0, 175.0, Transformation::AddRight, Vec2::new(100.0, 200.0)),
-                (500.0, 175.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
-            ],
-            cave: Cave {
-                position: Vec2::new(500.0, -225.0),
-                squares: vec![SquarePos(0, 0), SquarePos(0, 1)],
-            },
-            background: Some(String::from("backgrounds/level6.png")),
-            spawn_point: (-550.0, 300.0),
             button_pos: None,
             text_blocks: vec![],
         },
@@ -328,8 +328,8 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 (-425.0, -75.0, Transformation::RotateCw, Vec2::new(200.0, 200.0)),
                 (-25.0, 25.0, Transformation::RotateCw, Vec2::new(-100.0, -100.0)),
                 (300.0, -75.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
-                (300.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -100.0)),
-                (50.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -100.0)),
+                (300.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -200.0)),
+                (50.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(500.0, -225.0),
