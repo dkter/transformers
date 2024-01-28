@@ -87,6 +87,7 @@ impl TransformerBundle {
 
 pub fn apply_transformations(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut player_info: Query<(Entity, &mut Player, &mut Collider, &mut Path, &mut Transform)>,
     transformers: Query<&Transformer>,
 ) {
@@ -108,6 +109,10 @@ pub fn apply_transformations(
                             transformer_pos: transformer.position,
                         };
                         commands.entity(player_entity).insert(ColliderDisabled);
+                        commands.spawn(AudioBundle {
+                            source: asset_server.load("sounds/woosh_fast2.wav"),
+                            ..default()
+                        });
                     },
                     TransformerAnimState::MovingToward { orig_pos, transformer_pos } => {
                         if transformer_pos == transformer.position && distance < 0.01 {
