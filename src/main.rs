@@ -92,10 +92,15 @@ pub fn spawn_fade_to_black(commands: &mut Commands) {
 
 fn setup(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut rapier_config: ResMut<RapierConfiguration>,
 ) {
     rapier_config.gravity = Vec2::new(0.0, -100.0);
     commands.spawn(Camera2dBundle::default());
+    commands.spawn(AudioBundle {
+        source: asset_server.load("sounds/chained_to_a_cloud_2.wav"),
+        settings: PlaybackSettings::LOOP,
+    });
 }
 
 fn check_restart(
