@@ -70,7 +70,7 @@ struct TextBlock {
 
 pub struct LevelData {
     blocks: Vec<Block>,
-    transformers: Vec<(f32, f32, Transformation)>,
+    transformers: Vec<(f32, f32, Transformation, Vec2)>,
     cave: Cave,
     background: Option<String>,
     pub spawn_point: (f32, f32),
@@ -159,9 +159,9 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: -50.0, y: 50.0, w: 50.0, h: 50.0 },
             ],
             transformers: vec![
-                (-350.0, -225.0, Transformation::AddRight),
-                (-50.0, -225.0, Transformation::AddTop),
-                (-25.0, 75.0, Transformation::RotateCw),
+                (-350.0, -225.0, Transformation::AddRight, Vec2::new(200.0, 200.0)),
+                (-50.0, -225.0, Transformation::AddTop, Vec2::new(200.0, 200.0)),
+                (-25.0, 75.0, Transformation::RotateCw, Vec2::new(200.0, 200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(500.0, -150.0),
@@ -195,7 +195,7 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: 200.0, y: 350.0, w: 50.0, h: 50.0 },
             ],
             transformers: vec![
-                (175.0, 125.0, Transformation::AddRight),
+                (175.0, 125.0, Transformation::AddRight, Vec2::new(200.0, 200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(500.0, 200.0),
@@ -230,9 +230,9 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: 350.0, y: 350.0, w: 50.0, h: 50.0 },
             ],
             transformers: vec![
-                (-75.0, -125.0, Transformation::AddRight),
-                (-475.0, 25.0, Transformation::RotateCw),
-                (275.0, 225.0, Transformation::AddTop),
+                (-75.0, -125.0, Transformation::AddRight, Vec2::new(200.0, 200.0)),
+                (-475.0, 25.0, Transformation::RotateCw, Vec2::new(200.0, 200.0)),
+                (275.0, 225.0, Transformation::AddTop, Vec2::new(300.0, -10.0)),
             ],
             cave: Cave {
                 position: Vec2::new(500.0, 200.0),
@@ -251,14 +251,15 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
                 Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
                 // wall
-                Block { x: 150.0, y: -100.0, w: 50.0, h: 200.0 },
+                Block { x: 250.0, y: -100.0, w: 50.0, h: 200.0 },
                 // small blocks
+                Block { x: -400.0, y: -150.0, w: 50.0, h: 50.0 },
                 Block { x: -250.0, y: -150.0, w: 50.0, h: 50.0 },
-                Block { x: -150.0, y: -50.0, w: 100.0, h: 50.0 },
+                Block { x: -50.0, y: -50.0, w: 100.0, h: 50.0 },
             ],
             transformers: vec![
-                (-225.0, -125.0, Transformation::AddRight),
-                (-75.0, -25.0, Transformation::RotateCw),
+                (-225.0, -125.0, Transformation::AddRight, Vec2::new(100.0, 400.0)),
+                (25.0, -25.0, Transformation::RotateCw, Vec2::new(-300.0, 300.0)),
             ],
             cave: Cave {
                 position: Vec2::new(475.0, -125.0),
@@ -281,8 +282,8 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: -50.0, y: 150.0, w: 600.0, h: 300.0 },
             ],
             transformers: vec![
-                (200.0, 175.0, Transformation::AddRight),
-                (500.0, 175.0, Transformation::RotateCw),
+                (200.0, 175.0, Transformation::AddRight, Vec2::new(100.0, 200.0)),
+                (500.0, 175.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(500.0, -225.0),
@@ -299,7 +300,7 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
             ],
             transformers: vec![
-                (-100.0, -175.0, Transformation::AddRight),
+                (-100.0, -175.0, Transformation::AddRight, Vec2::new(200.0, 200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(-350.0, -150.0),
@@ -322,7 +323,7 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
                 Block { x: -300.0, y: -300.0, w: 600.0, h: 50.0 },
             ],
             transformers: vec![
-                (-100.0, -275.0, Transformation::AddRight),
+                (-100.0, -275.0, Transformation::AddRight, Vec2::new(200.0, 200.0)),
             ],
             cave: Cave {
                 position: Vec2::new(-400.0, -200.0),
@@ -430,9 +431,9 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
         ));
     }
     for transformer_args in &level_data.transformers {
-        let (x, y, transformation) = transformer_args;
+        let (x, y, transformation, spit_direction) = transformer_args;
         commands.spawn((
-            TransformerBundle::new(*x, *y, *transformation, asset_server),
+            TransformerBundle::new(*x, *y, *transformation, *spit_direction, asset_server),
             level,
         ));
     }
@@ -466,7 +467,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, &asset_server, 0);
+    start_level(&mut commands, &asset_server, 5);
 }
 
 pub fn next_level(

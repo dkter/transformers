@@ -3,6 +3,13 @@ use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use crate::player::{Player, SquarePos};
 
+pub enum TransformerAnimState {
+    NotAnimating,
+    MovingToward { orig_pos: Vec3, transformer_pos: Vec2 },
+    MovingAway { orig_pos: Vec3, transformer_pos: Vec2, transformer_spit_direction: Vec2 },
+    Falling,
+}
+
 #[derive(Copy, Clone)]
 pub enum Transformation {
     AddRight,
@@ -42,14 +49,16 @@ pub struct Transformer {
     position: Vec2,
     radius: f32,
     transformation: Transformation,
+    spit_direction: Vec2,
 }
 
 impl Transformer {
-    fn new(x: f32, y: f32, transformation: Transformation) -> Self {
+    fn new(x: f32, y: f32, transformation: Transformation, spit_direction: Vec2) -> Self {
         Transformer {
             position: Vec2::new(x, y),
             radius: 35.0,
             transformation,
+            spit_direction,
         }
     }
 }
@@ -62,8 +71,8 @@ pub struct TransformerBundle {
 }
 
 impl TransformerBundle {
-    pub fn new(x: f32, y: f32, transformation: Transformation, asset_server: &Res<AssetServer>) -> Self {
-        let transformer = Transformer::new(x, y, transformation);
+    pub fn new(x: f32, y: f32, transformation: Transformation, spit_direction: Vec2, asset_server: &Res<AssetServer>) -> Self {
+        let transformer = Transformer::new(x, y, transformation, spit_direction);
         TransformerBundle {
             sprite_bundle: SpriteBundle {
                 texture: asset_server.load(transformation.get_sprite_path()),
@@ -77,10 +86,11 @@ impl TransformerBundle {
 
 
 pub fn apply_transformations(
-    mut player_info: Query<(&mut Player, &mut Collider, &mut Path, &mut Transform)>,
+    mut commands: Commands,
+    mut player_info: Query<(Entity, &mut Player, &mut Collider, &mut Path, &mut Transform)>,
     transformers: Query<&Transformer>,
 ) {
-    for (mut player, mut collider, mut path, mut player_transform) in &mut player_info {
+    for (player_entity, mut player, mut collider, mut path, player_transform) in &mut player_info {
         let mut collided_with_transformer = false;
         for transformer in &transformers {
             let distance = collider.distance_to_point(
@@ -90,18 +100,36 @@ pub fn apply_transformations(
                 true
             );
             if distance < transformer.radius {
-                if !player.is_being_transformed {
-                    player.is_being_transformed = true;
-                    transformer.transformation.apply(&mut player);
-                    *path = player.get_shape();
-                    *collider = player.get_collider();
-                    player_transform.translation = Vec3::new(transformer.position.x, transformer.position.y, 0.0);
-                }
                 collided_with_transformer = true;
+                match player.transformer_anim_state {
+                    TransformerAnimState::NotAnimating => {
+                        player.transformer_anim_state = TransformerAnimState::MovingToward {
+                            orig_pos: player_transform.translation,
+                            transformer_pos: transformer.position,
+                        };
+                        commands.entity(player_entity).insert(ColliderDisabled);
+                    },
+                    TransformerAnimState::MovingToward { orig_pos, transformer_pos } => {
+                        if transformer_pos == transformer.position && distance < 0.01 {
+                            player.transformer_anim_state = TransformerAnimState::MovingAway {
+                                orig_pos,
+                                transformer_pos: transformer.position,
+                                transformer_spit_direction: transformer.spit_direction,
+                            };
+                            transformer.transformation.apply(&mut player);
+                            *path = player.get_shape();
+                            *collider = player.get_collider();
+                        }
+                    },
+                    _ => {},
+                }
             }
         }
         if !collided_with_transformer {
-            player.is_being_transformed = false;
+            if let TransformerAnimState::MovingAway { .. } = player.transformer_anim_state {
+                commands.entity(player_entity).remove::<ColliderDisabled>();
+                player.transformer_anim_state = TransformerAnimState::Falling;
+            }
         }
     }
 }

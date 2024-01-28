@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::LevelTransitioning;
+use crate::{
+    LevelTransitioning,
+    transformer::TransformerAnimState,
+};
 
 pub const PLAYER_WIDTH: f32 = 50.0;
 pub const PLAYER_HEIGHT: f32 = 50.0;
@@ -19,7 +22,7 @@ pub struct SquarePos(pub i32, pub i32);
 #[derive(Component)]
 pub struct Player {
     is_jumping: bool,
-    pub is_being_transformed: bool,
+    pub transformer_anim_state: TransformerAnimState,
     pub squares: Vec<SquarePos>,
 }
 
@@ -27,7 +30,7 @@ impl Player {
     fn new() -> Self {
         Player {
             is_jumping: false,
-            is_being_transformed: false,
+            transformer_anim_state: TransformerAnimState::NotAnimating,
             squares: vec![SquarePos(0, 0)],
         }
     }
@@ -109,26 +112,60 @@ pub fn spawn_player(mut commands: Commands) {
 
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player_info: Query<(&mut Player, &mut Velocity)>,
+    mut player_info: Query<(&mut Player, &mut Velocity, &mut Transform)>,
     level_transitioning: ResMut<LevelTransitioning>,
 ) {
     if level_transitioning.0 {
         return;
     }
-    for (mut player, mut velocity) in &mut player_info {
-        let left = keyboard_input.pressed(KeyCode::Left);
-        let right = keyboard_input.pressed(KeyCode::Right);
+    for (mut player, mut velocity, mut transform) in &mut player_info {
+        match player.transformer_anim_state {
+            TransformerAnimState::NotAnimating => {
+                // move normally
+                let left = keyboard_input.pressed(KeyCode::Left);
+                let right = keyboard_input.pressed(KeyCode::Right);
 
-        let x = (-(left as i8) + right as i8) as f32;
-        let y_delta = if keyboard_input.pressed(KeyCode::Up) && !player.is_jumping {
-            player.is_jumping = true;
-            350.0
-        } else {
-            0.0
-        };
-        let y = velocity.linvel.y + y_delta;
+                let x = 300.0 * (-(left as i8) + right as i8) as f32;
+                let y_delta = if keyboard_input.pressed(KeyCode::Up) && !player.is_jumping {
+                    player.is_jumping = true;
+                    350.0
+                } else {
+                    0.0
+                };
+                let y = velocity.linvel.y + y_delta;
 
-        velocity.linvel = Vec2::new(x * 300.0, y);
+                velocity.linvel = Vec2::new(x, y);
+            },
+            TransformerAnimState::MovingToward { orig_pos, transformer_pos } => {
+                // move toward transformer
+                velocity.linvel = Vec2::new(
+                    transformer_pos.x - orig_pos.x,
+                    transformer_pos.y - orig_pos.y,
+                ) * 5.0;
+                transform.scale *= 0.9;
+            },
+            TransformerAnimState::MovingAway { orig_pos, transformer_pos, transformer_spit_direction } => {
+                // move away from transformer
+                velocity.linvel = Vec2::new(
+                    transformer_spit_direction.x * (transformer_pos.x - orig_pos.x).signum(),
+                    transformer_spit_direction.y,
+                );
+                if transform.scale.x < 1.0 {
+                    transform.scale *= 1.1;
+                }
+                if transform.scale.x > 1.0 {
+                    transform.scale = Vec3::new(1.0, 1.0, 1.0);
+                }
+            },
+            TransformerAnimState::Falling => {
+                if transform.scale.x < 1.0 {
+                    transform.scale *= 1.1;
+                }
+                if transform.scale.x > 1.0 {
+                    transform.scale = Vec3::new(1.0, 1.0, 1.0);
+                }
+            },
+        }
     }
 }
 
@@ -141,6 +178,9 @@ pub fn set_jumping_false(
             if (contact_event.collider1 == entity || contact_event.collider2 == entity)
                     && contact_event.total_force.y != 0.0 {
                 player.is_jumping = false;
+                if let TransformerAnimState::Falling {..} = player.transformer_anim_state {
+                    player.transformer_anim_state = TransformerAnimState::NotAnimating;
+                }
             }
         }
     }
