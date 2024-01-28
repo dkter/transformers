@@ -296,6 +296,55 @@ I can't afford to change my shape. I won't be able to fit into my caves anymore.
         },
         LevelData {
             blocks: vec![
+                // frame
+                Block { x: -600.0, y: 400.0, w: 50.0, h: 800.0 },
+                Block { x: -600.0, y: -350.0, w: 1200.0, h: 50.0 },
+                Block { x: -600.0, y: 400.0, w: 1200.0, h: 50.0 },
+                Block { x: 550.0, y: 400.0, w: 50.0, h: 800.0 },
+                // horizontal platforms
+                Block { x: -550.0, y: 150.0, w: 200.0, h: 50.0 },
+                Block { x: -250.0, y: 150.0, w: 300.0, h: 50.0 },
+                Block { x: 125.0, y: 150.0, w: 200.0, h: 50.0 },
+                Block { x: -500.0, y: -100.0, w: 250.0, h: 50.0 },
+                Block { x: -125.0, y: -100.0, w: 325.0, h: 50.0 },
+                Block { x: 240.0, y: -100.0, w: 160.0, h: 50.0 },
+                // big wall
+                Block { x: 400.0, y: 350.0, w: 150.0, h: 500.0 },
+                // vertical walls
+                Block { x: -350.0, y: 350.0, w: 50.0, h: 25.0},
+                Block { x: -100.0, y: 350.0, w: 50.0, h: 25.0},
+                Block { x: 150.0, y: 350.0, w: 50.0, h: 275.0},
+                Block { x: -350.0, y: 250.0, w: 50.0, h: 300.0},
+                Block { x: -100.0, y: 250.0, w: 50.0, h: 300.0},
+                Block { x: -350.0, y: -100.0, w: 50.0, h: 250.0},
+                Block { x: -100.0, y: -100.0, w: 50.0, h: 200.0},
+                Block { x: 150.0, y: 0.0, w: 50.0, h: 300.0},
+            ],
+            transformers: vec![
+                (-375.0, 175.0, Transformation::AddRight, Vec2::new(-100.0, 200.0)),
+                (-125.0, 175.0, Transformation::RotateCw, Vec2::new(-200.0, 200.0)),
+                (-25.0, 175.0, Transformation::RotateCw, Vec2::new(-200.0, 200.0)),
+                (300.0, 175.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
+                (-425.0, -75.0, Transformation::RotateCw, Vec2::new(200.0, 200.0)),
+                (-25.0, 25.0, Transformation::RotateCw, Vec2::new(-100.0, -100.0)),
+                (300.0, -75.0, Transformation::RotateCw, Vec2::new(-100.0, 200.0)),
+                (300.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -100.0)),
+                (50.0, -175.0, Transformation::RotateCw, Vec2::new(0.0, -100.0)),
+            ],
+            cave: Cave {
+                position: Vec2::new(500.0, -225.0),
+                squares: vec![SquarePos(0, 0), SquarePos(0, 1)],
+            },
+            background: Some(String::from("backgrounds/level7.png")),
+            spawn_point: (-550.0, 300.0),
+            button_pos: None,
+            text_blocks: vec![],
+        },
+
+
+
+        LevelData {
+            blocks: vec![
                 Block { x: -400.0, y: -200.0, w: 800.0, h: 50.0 },
                 Block { x: 200.0, y: -100.0, w: 50.0, h: 100.0 },
             ],
@@ -467,7 +516,7 @@ pub fn start_level(commands: &mut Commands, asset_server: &Res<AssetServer>, lev
 }
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    start_level(&mut commands, &asset_server, 5);
+    start_level(&mut commands, &asset_server, 7);
 }
 
 pub fn next_level(
